@@ -22,8 +22,8 @@ func main() {
 		data: map[string]*Config{},
 	}
 	router.HandleFunc("/config/", server.createPostHandler).Methods("POST")
-	//router.HandleFunc("/posts/", server.getAllHandler).Methods("GET")
-	//router.HandleFunc("/post/{id}/", server.getPostHandler).Methods("GET")
+	router.HandleFunc("/configs/", server.getAllHandler).Methods("GET")
+	router.HandleFunc("/config/{id}/", server.getPostHandler).Methods("GET")
 	//router.HandleFunc("/post/{id}/", server.delPostHandler).Methods("DELETE")
 
 	// start server

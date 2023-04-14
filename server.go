@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"github.com/gorilla/mux"
 	"mime"
 	"net/http"
 )
@@ -34,4 +35,24 @@ func (cs *configServer) createPostHandler(w http.ResponseWriter, req *http.Reque
 	rt.Id = id
 	cs.data[id] = rt
 	renderJSON(w, rt)
+}
+
+func (cs *configServer) getAllHandler(w http.ResponseWriter, req *http.Request) {
+	allTasks := []*Config{}
+	for _, v := range cs.data {
+		allTasks = append(allTasks, v)
+	}
+
+	renderJSON(w, allTasks)
+}
+
+func (cs *configServer) getPostHandler(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["id"]
+	task, ok := cs.data[id]
+	if !ok {
+		err := errors.New("key not found")
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	renderJSON(w, task)
 }
