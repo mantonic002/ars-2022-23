@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/google/uuid"
 	"io"
 	"net/http"
 )
@@ -26,4 +27,8 @@ func renderJSON(w http.ResponseWriter, v interface{}) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+}
+
+func createId() string {
+	return uuid.New().String()
 }
