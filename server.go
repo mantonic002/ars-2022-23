@@ -56,3 +56,13 @@ func (cs *configServer) getPostHandler(w http.ResponseWriter, req *http.Request)
 	}
 	renderJSON(w, task)
 }
+func (cs *configServer) delPostHandler(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["id"]
+	if v, ok := cs.data[id]; ok {
+		delete(cs.data, id)
+		renderJSON(w, v)
+	} else {
+		err := errors.New("key not found")
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+}
