@@ -110,3 +110,23 @@ func (cs *configServer) AddConfigToGroup(w http.ResponseWriter, req *http.Reques
 
 	return
 }
+
+func (cs *configServer) getAllGroupsHandler(w http.ResponseWriter, req *http.Request) {
+	allGroups := []*Group{}
+	for _, v := range cs.groupData {
+		allGroups = append(allGroups, v)
+	}
+
+	renderJSON(w, allGroups)
+}
+
+func (cs *configServer) getGroupHandler(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["id"]
+	task, ok := cs.groupData[id]
+	if !ok {
+		err := errors.New("key not found")
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	renderJSON(w, task)
+}

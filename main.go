@@ -30,6 +30,9 @@ func main() {
 	router.HandleFunc("/group/", server.createGroupHandler).Methods("POST")
 	router.HandleFunc("/group/{groupId}/{id}/", server.AddConfigToGroup).Methods("PUT")
 
+	router.HandleFunc("/groups/", server.getAllHandler).Methods("GET")
+	router.HandleFunc("/group/{id}/", server.getGroupHandler).Methods("GET")
+
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
 	go func() {
