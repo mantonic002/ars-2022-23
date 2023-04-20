@@ -130,3 +130,38 @@ func (cs *configServer) getGroupHandler(w http.ResponseWriter, req *http.Request
 	}
 	renderJSON(w, task)
 }
+
+func (cs *configServer) delGroupHandler(w http.ResponseWriter, req *http.Request) {
+	id := mux.Vars(req)["id"]
+	_, ok := cs.groupData[id]
+	if !ok {
+		err := errors.New("key not found")
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	delete(cs.groupData, id)
+}
+
+func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *http.Request) {
+	groupId := mux.Vars(req)["groupId"]
+	id := mux.Vars(req)["id"]
+	group, ok := cs.groupData[groupId]
+	if !ok {
+		err := errors.New("group not found")
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	for i, config := range group.Configs {
+		if config.Id == id {
+			group.Configs = append(group.Configs[:i], group.Configs[i+1:]...)
+			cs.groupData[groupId] = group
+			return
+		}
+	}
+
+	err := errors.New("config not found in group")
+	http.Error(w, err.Error(), http.StatusNotFound)
+	return
+}
