@@ -19,12 +19,16 @@ func main() {
 	router.StrictSlash(true)
 
 	server := configServer{
-		data: map[string]*Config{},
+		data:      map[string]*Config{},
+		groupData: map[string]*Group{},
 	}
-	router.HandleFunc("/config/", server.createPostHandler).Methods("POST")
+	router.HandleFunc("/config/", server.createConfigHandler).Methods("POST")
 	router.HandleFunc("/configs/", server.getAllHandler).Methods("GET")
-	router.HandleFunc("/config/{id}/", server.getPostHandler).Methods("GET")
-	router.HandleFunc("/config/{id}/", server.delPostHandler).Methods("DELETE")
+	router.HandleFunc("/config/{id}/", server.getConfigHandler).Methods("GET")
+	router.HandleFunc("/config/{id}/", server.delConfigHandler).Methods("DELETE")
+
+	router.HandleFunc("/group/", server.createGroupHandler).Methods("POST")
+	router.HandleFunc("/group/{groupId}/{id}/", server.AddConfigToGroup).Methods("PUT")
 
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
