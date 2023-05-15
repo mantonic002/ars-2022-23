@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "c0d66d36-9392-4ecb-b0e7-f64765796077",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8000/group/5d1f587c-ff2e-481c-a335-ce019ebd655d/config/cdb8abde-3a43-47c0-9c7e-4c7315cb686d/",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/group/5d1f587c-ff2e-481c-a335-ce019ebd655d/config/cdb8abde-3a43-47c0-9c7e-4c7315cb686d/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"group",
+						"5d1f587c-ff2e-481c-a335-ce019ebd655d",
+						"config",
+						"cdb8abde-3a43-47c0-9c7e-4c7315cb686d",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/config/",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"entries\":{\"a\":\"lemon\",\"b\":\"apple\"}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/config/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"config",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/configs/",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/configs/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"configs",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/group/5d1f587c-ff2e-481c-a335-ce019ebd655d/cdb8abde-3a43-47c0-9c7e-4c7315cb686d/",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/group/5d1f587c-ff2e-481c-a335-ce019ebd655d/cdb8abde-3a43-47c0-9c7e-4c7315cb686d/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"group",
+						"5d1f587c-ff2e-481c-a335-ce019ebd655d",
+						"cdb8abde-3a43-47c0-9c7e-4c7315cb686d",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/group/5d1f587c-ff2e-481c-a335-ce019ebd655d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/group/5d1f587c-ff2e-481c-a335-ce019ebd655d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"group",
+						"5d1f587c-ff2e-481c-a335-ce019ebd655d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8000/group/",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Configs\":[]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/group/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"group",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/groups/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"groups",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
