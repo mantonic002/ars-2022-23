@@ -1,14 +1,28 @@
+// Config API
+//
+//	Title: Config API
+//
+//	Schemes: http
+//	Version: 0.0.1
+//	BasePath: /
+//
+//	Produces:
+//	  - application/json
+//
+// swagger:meta
 package main
 
 import (
 	"context"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -28,13 +42,18 @@ func main() {
 	router.HandleFunc("/config/{id}/", server.delConfigHandler).Methods("DELETE")
 
 	router.HandleFunc("/group/", server.createGroupHandler).Methods("POST")
-	router.HandleFunc("/group/{groupId}/config{id}/", server.AddConfigToGroup).Methods("PUT")
+	router.HandleFunc("/group/{groupId}/config{id}/", server.addConfigToGroup).Methods("PUT")
 
 	router.HandleFunc("/groups/", server.getAllGroupsHandler).Methods("GET")
 	router.HandleFunc("/group/{id}/", server.getGroupHandler).Methods("GET")
 
 	router.HandleFunc("/group/{id}/", server.delGroupHandler).Methods("DELETE")
 	router.HandleFunc("/group/{groupId}/config/{id}/", server.delConfigFromGroupHandler).Methods("DELETE")
+
+	// SwaggerUI
+	optionsDevelopers := middleware.SwaggerUIOpts{SpecURL: "swagger.yaml"}
+	developerDocumentationHandler := middleware.SwaggerUI(optionsDevelopers, nil)
+	router.Handle("/docs", developerDocumentationHandler)
 
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
