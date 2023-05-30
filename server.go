@@ -41,7 +41,7 @@ func (cs *configServer) createConfigHandler(w http.ResponseWriter, req *http.Req
 	}
 
 	id := createId()
-	rt.Id = id
+	rt.ConfigId = id
 	cs.data[id] = rt
 	renderJSON(w, rt)
 }
@@ -61,8 +61,8 @@ func (cs *configServer) getAllHandler(w http.ResponseWriter, req *http.Request) 
 	renderJSON(w, allConfigs)
 }
 
-// swagger:route GET /config/{id}/ config getConfigById
-// Get config by ID
+// swagger:route GET /config/{ConfigId}/ config getConfigById
+// Get config by config-id
 //
 // responses:
 //
@@ -79,7 +79,7 @@ func (cs *configServer) getConfigHandler(w http.ResponseWriter, req *http.Reques
 	renderJSON(w, task)
 }
 
-// swagger:route DELETE /config/{id}/ config deleteConfig
+// swagger:route DELETE /config/{ConfigId}/ config deleteConfig
 // Delete config
 //
 // responses:
@@ -126,12 +126,12 @@ func (cs *configServer) createGroupHandler(w http.ResponseWriter, req *http.Requ
 	}
 
 	id := createId()
-	group.Id = id
+	group.GroupId = id
 	cs.groupData[id] = group
 	renderJSON(w, group)
 }
 
-// swagger:route PUT /group/{id}/config/{id}/ group addConfigToGroup
+// swagger:route PUT /group/{GroupId}/config/{ConfigId}/ group addConfigToGroup
 // Add config to group
 //
 // responses:
@@ -171,8 +171,8 @@ func (cs *configServer) getAllGroupsHandler(w http.ResponseWriter, req *http.Req
 	renderJSON(w, allGroups)
 }
 
-// swagger:route GET /group/{id}/ group getGroupById
-// Get group by ID
+// swagger:route GET /group/{GroupId}/ group getGroupById
+// Get group by group-id
 //
 // responses:
 //
@@ -189,7 +189,7 @@ func (cs *configServer) getGroupHandler(w http.ResponseWriter, req *http.Request
 	renderJSON(w, task)
 }
 
-// swagger:route DELETE /group/{id}/ group deleteGroup
+// swagger:route DELETE /group/{GroupId}/ group deleteGroup
 // Delete group
 //
 // responses:
@@ -208,7 +208,7 @@ func (cs *configServer) delGroupHandler(w http.ResponseWriter, req *http.Request
 	delete(cs.groupData, id)
 }
 
-// swagger:route DELETE /group/{id}/config/{id}/ group deleteConfigFromGroup
+// swagger:route DELETE /group/{GroupId}/config/{ConfigId}/ group deleteConfigFromGroup
 // Delete config from group
 //
 // responses:
@@ -226,7 +226,7 @@ func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *ht
 	}
 
 	for i, config := range group.Configs {
-		if config.Id == id {
+		if config.ConfigId == id {
 			group.Configs = append(group.Configs[:i], group.Configs[i+1:]...)
 			cs.groupData[groupId] = group
 			return
@@ -236,4 +236,8 @@ func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *ht
 	err := errors.New("config not found in group")
 	http.Error(w, err.Error(), http.StatusNotFound)
 	return
+}
+
+func (ts *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./swagger.yaml")
 }

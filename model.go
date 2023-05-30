@@ -2,9 +2,9 @@ package main
 
 // swagger:model Config
 type Config struct {
-	// Id of the config
+	// ConfigId of the config
 	// in: string
-	Id string `json:"id"`
+	ConfigId string `json:"ConfigId"`
 
 	// Map of entries of the config
 	// in: map[string]string
@@ -13,9 +13,9 @@ type Config struct {
 
 // swagger:model Group
 type Group struct {
-	// Id of the group
+	// GroupId of the group
 	// in: string
-	Id string `json:"id"`
+	GroupId string `json:"GroupId"`
 
 	// List of configs of the group
 	// in: []Config

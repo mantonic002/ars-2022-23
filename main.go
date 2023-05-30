@@ -50,6 +50,8 @@ func main() {
 	router.HandleFunc("/group/{id}/", server.delGroupHandler).Methods("DELETE")
 	router.HandleFunc("/group/{groupId}/config/{id}/", server.delConfigFromGroupHandler).Methods("DELETE")
 
+	router.HandleFunc("/swagger.yaml", server.swaggerHandler).Methods("GET")
+
 	// SwaggerUI
 	optionsDevelopers := middleware.SwaggerUIOpts{SpecURL: "swagger.yaml"}
 	developerDocumentationHandler := middleware.SwaggerUI(optionsDevelopers, nil)

@@ -2,20 +2,20 @@ package main
 
 // swagger:response ResponseConfig
 type ResponseConfig struct {
-	// Id of the config
+	// ConfigId of the config
 	// in: string
-	Id string `json:"id"`
+	ConfigId string `json:"ConfigId"`
 
 	// Map of entries of the config
-	// in: map[string]string
+	// in: body
 	Entries map[string]string `json:"entries"`
 }
 
 // swagger:response ResponseGroup
 type ResponseGroup struct {
-	// Id of the group
+	// GroupId of the group
 	// in: string
-	Id string `json:"id"`
+	GroupId string `json:"GroupId"`
 
 	// List of configs of the group
 	// in: []Config
