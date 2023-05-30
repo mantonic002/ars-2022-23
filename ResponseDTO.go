@@ -1,5 +1,7 @@
 package main
 
+import "ars-2022-23/ConfigStore"
+
 // swagger:response ResponseConfig
 type ResponseConfig struct {
 	// ConfigId of the config
@@ -19,7 +21,7 @@ type ResponseGroup struct {
 
 	// List of configs of the group
 	// in: []Config
-	Configs []Config `json:"configs"`
+	Configs []ConfigStore.Config `json:"configs"`
 }
 
 // swagger:response ErrorResponse

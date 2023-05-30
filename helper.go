@@ -1,28 +1,29 @@
 package main
 
 import (
+	"ars-2022-23/ConfigStore"
 	"encoding/json"
 	"github.com/google/uuid"
 	"io"
 	"net/http"
 )
 
-func decodeBody(r io.Reader) (*Config, error) {
+func decodeBody(r io.Reader) (*ConfigStore.Config, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
 
-	var c Config
+	var c ConfigStore.Config
 	if err := dec.Decode(&c); err != nil {
 		return nil, err
 	}
 	return &c, nil
 }
 
-func decodeGroup(r io.Reader) (*Group, error) {
+func decodeGroup(r io.Reader) (*ConfigStore.Group, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
 
-	var g Group
+	var g ConfigStore.Group
 	if err := dec.Decode(&g); err != nil {
 		return nil, err
 	}

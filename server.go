@@ -1,6 +1,7 @@
 package main
 
 import (
+	"ars-2022-23/ConfigStore"
 	"errors"
 	"github.com/gorilla/mux"
 	"mime"
@@ -8,8 +9,9 @@ import (
 )
 
 type configServer struct {
-	data      map[string]*Config
-	groupData map[string]*Group // izigrava bazu podataka
+	store *ConfigStore.ConfigStore
+
+	groupData map[string]*ConfigStore.Group // izigrava bazu podataka
 }
 
 // swagger:route POST /config/ config createConfig
@@ -40,10 +42,12 @@ func (cs *configServer) createConfigHandler(w http.ResponseWriter, req *http.Req
 		return
 	}
 
-	id := createId()
-	rt.ConfigId = id
-	cs.data[id] = rt
-	renderJSON(w, rt)
+	config, err := cs.store.Config(rt)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	renderJSON(w, config)
 }
 
 // swagger:route GET /configs/ config getConfigs
@@ -53,12 +57,12 @@ func (cs *configServer) createConfigHandler(w http.ResponseWriter, req *http.Req
 //
 //	200: []ResponseConfig
 func (cs *configServer) getAllHandler(w http.ResponseWriter, req *http.Request) {
-	allConfigs := []*Config{}
-	for _, v := range cs.data {
-		allConfigs = append(allConfigs, v)
+	allTasks, err := cs.store.GetAll()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-
-	renderJSON(w, allConfigs)
+	renderJSON(w, allTasks)
 }
 
 // swagger:route GET /config/{ConfigId}/ config getConfigById
@@ -70,10 +74,10 @@ func (cs *configServer) getAllHandler(w http.ResponseWriter, req *http.Request) 
 //	200: ResponseConfig
 func (cs *configServer) getConfigHandler(w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	task, ok := cs.data[id]
-	if !ok {
-		err := errors.New("key not found")
-		http.Error(w, err.Error(), http.StatusNotFound)
+	version := mux.Vars(req)["version"]
+	task, err := cs.store.Get(id, version)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	renderJSON(w, task)
@@ -88,13 +92,14 @@ func (cs *configServer) getConfigHandler(w http.ResponseWriter, req *http.Reques
 //	204: NoContentResponse
 func (cs *configServer) delConfigHandler(w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	if v, ok := cs.data[id]; ok {
-		delete(cs.data, id)
-		renderJSON(w, v)
-	} else {
-		err := errors.New("key not found")
-		http.Error(w, err.Error(), http.StatusNotFound)
+	version := mux.Vars(req)["version"]
+
+	msg, err := cs.store.Delete(id, version)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
+	renderJSON(w, msg)
 }
 
 // swagger:route POST /group/ group createGroup
@@ -140,20 +145,20 @@ func (cs *configServer) createGroupHandler(w http.ResponseWriter, req *http.Requ
 //	400: ErrorResponse
 //	201: ResponseGroup
 func (cs *configServer) addConfigToGroup(w http.ResponseWriter, req *http.Request) {
-	groupId := mux.Vars(req)["groupId"]
-	id := mux.Vars(req)["id"]
-	task, ok := cs.data[id]
-	group, ook := cs.groupData[groupId]
-	if !ok || !ook {
-		err := errors.New("key not found")
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	group.Configs = append(group.Configs, *task)
-	cs.groupData[groupId] = group
-
-	return
+	//groupId := mux.Vars(req)["groupId"]
+	//id := mux.Vars(req)["id"]
+	//task, ok := cs.groupData[id]
+	//group, ook := cs.groupData[groupId]
+	//if !ok || !ook {
+	//	err := errors.New("key not found")
+	//	http.Error(w, err.Error(), http.StatusNotFound)
+	//	return
+	//}
+	//
+	//group.Configs = append(group.Configs, *task)
+	//cs.groupData[groupId] = group
+	//
+	//return
 }
 
 // swagger:route GET /groups/ group getGroups
@@ -163,7 +168,7 @@ func (cs *configServer) addConfigToGroup(w http.ResponseWriter, req *http.Reques
 //
 //	200: []ResponseGroup
 func (cs *configServer) getAllGroupsHandler(w http.ResponseWriter, req *http.Request) {
-	allGroups := []*Group{}
+	allGroups := []*ConfigStore.Group{}
 	for _, v := range cs.groupData {
 		allGroups = append(allGroups, v)
 	}
@@ -238,6 +243,6 @@ func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *ht
 	return
 }
 
-func (ts *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {
+func (cs *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./swagger.yaml")
 }
