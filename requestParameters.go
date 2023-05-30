@@ -1,5 +1,7 @@
 package main
 
+import "ars-2022-23/ConfigStore"
+
 // swagger:parameters deleteConfig
 type DeleteConfigRequest struct {
 	// Config ConfigId
@@ -19,7 +21,7 @@ type RequestConfigBody struct {
 	// - name: body
 	//  in: body
 	//  description: name and status
-	Body Config `json:"body"`
+	Body ConfigStore.Config `json:"body"`
 }
 
 // swagger:parameters config createGroup
@@ -27,7 +29,7 @@ type RequestGroupBody struct {
 	// - name: body
 	//  in: body
 	//  description: name and status
-	Body Group `json:"body"`
+	Body ConfigStore.Group `json:"body"`
 }
 
 // swagger:parameters addConfigToGroup

@@ -13,6 +13,7 @@
 package main
 
 import (
+	"ars-2022-23/ConfigStore"
 	"context"
 	"log"
 	"net/http"
@@ -32,9 +33,13 @@ func main() {
 	router := mux.NewRouter()
 	router.StrictSlash(true)
 
+	store, err := ConfigStore.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	server := configServer{
-		data:      map[string]*Config{},
-		groupData: map[string]*Group{},
+		store: store,
 	}
 	router.HandleFunc("/config/", server.createConfigHandler).Methods("POST")
 	router.HandleFunc("/configs/", server.getAllHandler).Methods("GET")
