@@ -237,3 +237,7 @@ func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *ht
 	http.Error(w, err.Error(), http.StatusNotFound)
 	return
 }
+
+func (ts *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./swagger.yaml")
+}
