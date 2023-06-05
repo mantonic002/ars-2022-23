@@ -9,9 +9,8 @@ import (
 )
 
 type configServer struct {
-	store *ConfigStore.ConfigStore
-
-	groupData map[string]*ConfigStore.Group // izigrava bazu podataka
+	store      *ConfigStore.ConfigStore
+	groupStore *ConfigStore.GroupStore
 }
 
 // swagger:route POST /config/ config createConfig
@@ -124,15 +123,17 @@ func (cs *configServer) createGroupHandler(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	group, err := decodeGroup(req.Body)
+	gr, err := decodeGroup(req.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	id := createId()
-	group.GroupId = id
-	cs.groupData[id] = group
+	group, err := cs.groupStore.Group(gr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	renderJSON(w, group)
 }
 
@@ -168,12 +169,13 @@ func (cs *configServer) addConfigToGroup(w http.ResponseWriter, req *http.Reques
 //
 //	200: []ResponseGroup
 func (cs *configServer) getAllGroupsHandler(w http.ResponseWriter, req *http.Request) {
-	allGroups := []*ConfigStore.Group{}
-	for _, v := range cs.groupData {
-		allGroups = append(allGroups, v)
+	allTasks, err := cs.groupStore.GetAllGroups()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
+	renderJSON(w, allTasks)
 
-	renderJSON(w, allGroups)
 }
 
 // swagger:route GET /group/{GroupId}/ group getGroupById
@@ -185,10 +187,10 @@ func (cs *configServer) getAllGroupsHandler(w http.ResponseWriter, req *http.Req
 //	200: ResponseGroup
 func (cs *configServer) getGroupHandler(w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	task, ok := cs.groupData[id]
-	if !ok {
-		err := errors.New("key not found")
-		http.Error(w, err.Error(), http.StatusNotFound)
+	version := mux.Vars(req)["version"]
+	task, err := cs.groupStore.GetGroup(id, version)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	renderJSON(w, task)
@@ -203,14 +205,13 @@ func (cs *configServer) getGroupHandler(w http.ResponseWriter, req *http.Request
 //	204: NoContentResponse
 func (cs *configServer) delGroupHandler(w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
-	_, ok := cs.groupData[id]
-	if !ok {
-		err := errors.New("key not found")
-		http.Error(w, err.Error(), http.StatusNotFound)
+	version := mux.Vars(req)["version"]
+	msg, err := cs.groupStore.DeleteGroup(id, version)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	delete(cs.groupData, id)
+	renderJSON(w, msg)
 }
 
 // swagger:route DELETE /group/{GroupId}/config/{ConfigId}/ group deleteConfigFromGroup
@@ -221,26 +222,26 @@ func (cs *configServer) delGroupHandler(w http.ResponseWriter, req *http.Request
 //	404: ErrorResponse
 //	204: NoContentResponse
 func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *http.Request) {
-	groupId := mux.Vars(req)["groupId"]
-	id := mux.Vars(req)["id"]
-	group, ok := cs.groupData[groupId]
-	if !ok {
-		err := errors.New("group not found")
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	for i, config := range group.Configs {
-		if config.ConfigId == id {
-			group.Configs = append(group.Configs[:i], group.Configs[i+1:]...)
-			cs.groupData[groupId] = group
-			return
-		}
-	}
-
-	err := errors.New("config not found in group")
-	http.Error(w, err.Error(), http.StatusNotFound)
-	return
+	//groupId := mux.Vars(req)["groupId"]
+	//id := mux.Vars(req)["id"]
+	//group, ok := cs.groupData[groupId]
+	//if !ok {
+	//	err := errors.New("group not found")
+	//	http.Error(w, err.Error(), http.StatusNotFound)
+	//	return
+	//}
+	//
+	//for i, config := range group.Configs {
+	//	if config.ConfigId == id {
+	//		group.Configs = append(group.Configs[:i], group.Configs[i+1:]...)
+	//		cs.groupData[groupId] = group
+	//		return
+	//	}
+	//}
+	//
+	//err := errors.New("config not found in group")
+	//http.Error(w, err.Error(), http.StatusNotFound)
+	//return
 }
 
 func (cs *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {

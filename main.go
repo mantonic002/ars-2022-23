@@ -38,8 +38,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	groupStore, err := ConfigStore.NewGroup()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	server := configServer{
-		store: store,
+		store:      store,
+		groupStore: groupStore,
 	}
 	router.HandleFunc("/config/", server.createConfigHandler).Methods("POST")
 	router.HandleFunc("/configs/", server.getAllHandler).Methods("GET")
