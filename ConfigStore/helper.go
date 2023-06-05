@@ -9,6 +9,9 @@ const (
 	configs       = "configs/%s/%s"
 	configsLabels = "configs/%s/%s/%s"
 	all           = "configs"
+
+	groups    = "groups/%s/%s"
+	allGroups = "groups"
 )
 
 func generateKey(version string, labels string) (string, string) {
@@ -28,4 +31,14 @@ func constructKey(id string, version string, labels string) string {
 		return fmt.Sprintf(configs, id, version)
 	}
 
+}
+
+func generateKeyGroup(version string) (string, string) {
+	id := uuid.New().String()
+	return fmt.Sprintf(groups, id, version), id
+
+}
+
+func constructKeyGroup(id string, version string) string {
+	return fmt.Sprintf(groups, id, version)
 }
