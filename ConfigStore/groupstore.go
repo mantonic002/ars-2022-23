@@ -30,7 +30,7 @@ func NewGroup() (*GroupStore, error) {
 func (ps *GroupStore) GetGroup(id string, version string) ([]*Group, error) {
 	kv := ps.cli.KV()
 
-	data, _, err := kv.List(constructKey(id, version, ""), nil)
+	data, _, err := kv.List(constructKeyGroup(id, version), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (ps *GroupStore) GetGroup(id string, version string) ([]*Group, error) {
 
 func (ps *GroupStore) GetAllGroups() ([]*Group, error) {
 	kv := ps.cli.KV()
-	data, _, err := kv.List(all, nil)
+	data, _, err := kv.List(allGroups, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (ps *GroupStore) GetAllGroups() ([]*Group, error) {
 
 func (ps *GroupStore) DeleteGroup(id string, version string) (map[string]string, error) {
 	kv := ps.cli.KV()
-	_, err := kv.DeleteTree(constructKey(id, version, ""), nil)
+	_, err := kv.DeleteTree(constructKeyGroup(id, version), nil)
 	if err != nil {
 		return nil, err
 	}
