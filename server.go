@@ -82,6 +82,27 @@ func (cs *configServer) getConfigHandler(w http.ResponseWriter, req *http.Reques
 	renderJSON(w, task)
 }
 
+func (cs *configServer) getConfigByLabelHandler(w http.ResponseWriter, req *http.Request) {
+	labels := mux.Vars(req)["labels"]
+	allTasks, err := cs.store.GetAll()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	filteredConfigs := make([]ConfigStore.Config, 0)
+
+	// Loop through allTasks and check if the configurations have labels equal to the provided labels
+	for _, task := range allTasks {
+		config := *task // Dereference the task pointer and assign it to a new variable of type ConfigStore.Config
+		if config.Labels == labels {
+			filteredConfigs = append(filteredConfigs, config)
+		}
+	}
+
+	renderJSON(w, filteredConfigs)
+}
+
 // swagger:route DELETE /config/{ConfigId}/ config deleteConfig
 // Delete config
 //
