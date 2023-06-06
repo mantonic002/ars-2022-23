@@ -146,20 +146,26 @@ func (cs *configServer) createGroupHandler(w http.ResponseWriter, req *http.Requ
 //	400: ErrorResponse
 //	201: ResponseGroup
 func (cs *configServer) addConfigToGroup(w http.ResponseWriter, req *http.Request) {
-	//groupId := mux.Vars(req)["groupId"]
-	//id := mux.Vars(req)["id"]
-	//task, ok := cs.groupData[id]
-	//group, ook := cs.groupData[groupId]
-	//if !ok || !ook {
-	//	err := errors.New("key not found")
-	//	http.Error(w, err.Error(), http.StatusNotFound)
-	//	return
-	//}
-	//
-	//group.Configs = append(group.Configs, *task)
-	//cs.groupData[groupId] = group
-	//
-	//return
+	groupId := mux.Vars(req)["groupId"]
+	groupVersion := mux.Vars(req)["groupVersion"]
+
+	id := mux.Vars(req)["id"]
+	version := mux.Vars(req)["version"]
+
+	groups, err := cs.groupStore.GetGroup(groupId, groupVersion)
+	configs, errr := cs.store.Get(id, version)
+	if err != nil || errr != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	config := configs[0]
+	group := groups[0]
+
+	group.Configs = append(group.Configs, *config)
+	cs.groupStore.DeleteGroup(groupId, groupVersion)
+	cs.groupStore.Group(group)
+	return
+
 }
 
 // swagger:route GET /groups/ group getGroups
@@ -222,28 +228,41 @@ func (cs *configServer) delGroupHandler(w http.ResponseWriter, req *http.Request
 //	404: ErrorResponse
 //	204: NoContentResponse
 func (cs *configServer) delConfigFromGroupHandler(w http.ResponseWriter, req *http.Request) {
-	//groupId := mux.Vars(req)["groupId"]
-	//id := mux.Vars(req)["id"]
-	//group, ok := cs.groupData[groupId]
-	//if !ok {
-	//	err := errors.New("group not found")
-	//	http.Error(w, err.Error(), http.StatusNotFound)
-	//	return
-	//}
-	//
-	//for i, config := range group.Configs {
-	//	if config.ConfigId == id {
-	//		group.Configs = append(group.Configs[:i], group.Configs[i+1:]...)
-	//		cs.groupData[groupId] = group
-	//		return
-	//	}
-	//}
-	//
-	//err := errors.New("config not found in group")
-	//http.Error(w, err.Error(), http.StatusNotFound)
-	//return
+	groupId := mux.Vars(req)["groupId"]
+	groupVersion := mux.Vars(req)["groupVersion"]
+
+	id := mux.Vars(req)["id"]
+	version := mux.Vars(req)["version"]
+
+	task, err := cs.groupStore.GetGroup(groupId, groupVersion)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if len(task) == 0 {
+		error := errors.New("group not found")
+		http.Error(w, error.Error(), http.StatusNotFound)
+		return
+	}
+	group := task[0]
+
+	for i, config := range group.Configs {
+		if config.ConfigId == id && config.Version == version {
+			group.Configs = append(group.Configs[:i], group.Configs[i+1:]...)
+			cs.groupStore.DeleteGroup(groupId, groupVersion)
+			cs.groupStore.Group(group)
+			return
+		}
+	}
+
+	error := errors.New("config not found in group")
+	http.Error(w, error.Error(), http.StatusNotFound)
+	return
 }
 
-func (cs *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {
+func (ts *configServer) swaggerHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./swagger.yaml")
 }
+
+//603f0297-4af8-4466-8269-8e8a95af1556
+//1d1ba4e8-5db5-4853-b9de-79bb46e469df
