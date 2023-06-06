@@ -47,23 +47,24 @@ func main() {
 		store:      store,
 		groupStore: groupStore,
 	}
-	router.HandleFunc("/config/", server.createConfigHandler).Methods("POST")
-	router.HandleFunc("/configs/", server.getAllHandler).Methods("GET")
-	router.HandleFunc("/config/{id}/", server.getConfigHandler).Methods("GET")
-	router.HandleFunc("/configs/{labels}", server.getConfigByLabelHandler).Methods("GET")
+	router.HandleFunc("/config/", count(server.createConfigHandler)).Methods("POST")
+	router.HandleFunc("/configs/", count(server.getAllHandler)).Methods("GET")
+	router.HandleFunc("/config/{id}/", count(server.getConfigHandler)).Methods("GET")
+	router.HandleFunc("/configs/{labels}", count(server.getConfigByLabelHandler)).Methods("GET")
 
-	router.HandleFunc("/config/{id}/", server.delConfigHandler).Methods("DELETE")
+	router.HandleFunc("/config/{id}/", count(server.delConfigHandler)).Methods("DELETE")
 
-	router.HandleFunc("/group/", server.createGroupHandler).Methods("POST")
-	router.HandleFunc("/group/{groupId}/config/{id}/", server.addConfigToGroup).Methods("PUT")
+	router.HandleFunc("/group/", count(server.createGroupHandler)).Methods("POST")
+	router.HandleFunc("/group/{groupId}/config/{id}/", count(server.addConfigToGroup)).Methods("PUT")
 
-	router.HandleFunc("/groups/", server.getAllGroupsHandler).Methods("GET")
-	router.HandleFunc("/group/{id}/", server.getGroupHandler).Methods("GET")
+	router.HandleFunc("/groups/", count(server.getAllGroupsHandler)).Methods("GET")
+	router.HandleFunc("/group/{id}/", count(server.getGroupHandler)).Methods("GET")
 
-	router.HandleFunc("/group/{id}/", server.delGroupHandler).Methods("DELETE")
-	router.HandleFunc("/group/{groupId}/config/{id}/", server.delConfigFromGroupHandler).Methods("DELETE")
+	router.HandleFunc("/group/{id}/", count(server.delGroupHandler)).Methods("DELETE")
+	router.HandleFunc("/group/{groupId}/config/{id}/", count(server.delConfigFromGroupHandler)).Methods("DELETE")
 
 	router.HandleFunc("/swagger.yaml", server.swaggerHandler).Methods("GET")
+	router.Path("/metrics").Handler(metricsHandler())
 
 	// SwaggerUI
 	optionsDevelopers := middleware.SwaggerUIOpts{SpecURL: "swagger.yaml"}
