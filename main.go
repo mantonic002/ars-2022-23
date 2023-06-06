@@ -50,10 +50,12 @@ func main() {
 	router.HandleFunc("/config/", server.createConfigHandler).Methods("POST")
 	router.HandleFunc("/configs/", server.getAllHandler).Methods("GET")
 	router.HandleFunc("/config/{id}/", server.getConfigHandler).Methods("GET")
+	router.HandleFunc("/configs/{labels}", server.getConfigByLabelHandler).Methods("GET")
+
 	router.HandleFunc("/config/{id}/", server.delConfigHandler).Methods("DELETE")
 
 	router.HandleFunc("/group/", server.createGroupHandler).Methods("POST")
-	router.HandleFunc("/group/{groupId}/config{id}/", server.addConfigToGroup).Methods("PUT")
+	router.HandleFunc("/group/{groupId}/config/{id}/", server.addConfigToGroup).Methods("PUT")
 
 	router.HandleFunc("/groups/", server.getAllGroupsHandler).Methods("GET")
 	router.HandleFunc("/group/{id}/", server.getGroupHandler).Methods("GET")
